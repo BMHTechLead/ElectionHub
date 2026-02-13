@@ -1,0 +1,197 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+
+{% block title %}{{ subdistrict.name }} | ElectionHub{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="mb-4">
+
+  <h3 class="fw-bold mb-1">
+    <a href="{% url 'district_detail' subdistrict.district.id %}?type={{ voting_type }}"
+       class="text-decoration-none text-dark">
+       ← {{ subdistrict.name }}
+    </a>
+  </h3>
+
+  <div class="text-muted small mb-3">
+    District: {{ subdistrict.district.name }}
+    Governorate: {{ subdistrict.district.governorate.name }}
+  </div>
+
+  <!-- TOTAL SUMMARY BOX -->
+  <div class="card border-success shadow-sm p-3 mb-3">
+
+    <div class="row text-center">
+
+      <div class="col-md-4">
+        <div class="text-muted small">PUK Total Votes</div>
+        <div class="fw-bold fs-4 text-success">
+          {{ total_puk_votes|intcomma }}
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="text-muted small">Total Allowed Votes</div>
+        <div class="fw-bold fs-4">
+          {{ total_allowed_votes|intcomma }}
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="text-muted small">PUK %</div>
+        <div class="fw-bold fs-4 text-success">
+          {{ puk_percentage|floatformat:2 }}%
+        </div>
+      </div>
+
+    </div>
+
+    <!-- GLOBAL PROGRESS BAR -->
+    <div class="progress mt-3" style="height: 8px;">
+      <div class="progress-bar bg-success"
+           role="progressbar"
+           style="width: {{ puk_percentage|floatformat:0 }}%;"
+           aria-valuenow="{{ puk_percentage|floatformat:0 }}"
+           aria-valuemin="0"
+           aria-valuemax="100">
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- SEARCH -->
+<form method="get" class="mb-4">
+
+  <input type="hidden" name="type" value="{{ voting_type }}">
+
+  <div class="row">
+
+    <div class="col-md-6">
+      <input type="text"
+             name="q"
+             value="{{ search_query }}"
+             class="form-control"
+             placeholder="Search by unit number, name, or address...">
+    </div>
+
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success w-100">
+        Search
+      </button>
+    </div>
+
+    <div class="col-md-2">
+      <a href="?type={{ voting_type }}" class="btn btn-outline-secondary w-100">
+        Reset
+      </a>
+    </div>
+
+  </div>
+
+</form>
+
+
+
+<!-- UNITS TABLE -->
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+
+    <h5 class="fw-bold mb-4">Election Units</h5>
+
+    <div class="table-responsive">
+      <table class="table align-middle table-borderless">
+
+        <thead class="border-bottom">
+          <tr class="text-muted small">
+            <th>Unit No.</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th class="text-end">PUK - Votes</th>
+            <th class="text-end">TA - Votes</th>
+            <th class="text-center">PUK %</th>
+            <th style="width:150px;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for u in units %}
+
+          {% with allowed=u.total_allowed_votes|default:0 votes=u.total_votes|default:0 %}
+            
+            {% if allowed > 0 %}
+              {% widthratio votes allowed 100 as percent %}
+            {% else %}
+              {% widthratio 0 1 100 as percent %}
+            {% endif %}
+
+          <tr class="border-bottom">
+
+            <td>{{ u.election_unit_number }}</td>
+
+            <td>{{ u.election_unit_name }}</td>
+
+            <td class="text-muted small">
+              {{ u.election_unit_address }}
+            </td>
+
+            <td class="fw-bold text-success text-end">
+              {{ votes|intcomma }}
+            </td>
+
+            <td class="text-end">
+              {{ allowed|intcomma }}
+            </td>
+
+            <td class="text-center fw-semibold">
+              {{ percent }}%
+            </td>
+
+            <td class="text-end">
+              <a href="{% url 'unit_detail' u.id %}?type={{ voting_type }}"
+                 class="btn btn-outline-success btn-sm">
+                Open
+              </a>
+            </td>
+
+          </tr>
+
+          <!-- UNIT PROGRESS BAR -->
+          <tr>
+            <td colspan="7" class="pt-0">
+              <div class="progress" style="height:6px;">
+                <div class="progress-bar bg-success"
+                     role="progressbar"
+                     style="width: {{ percent }}%;"
+                     aria-valuenow="{{ percent }}"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          {% endwith %}
+        {% empty %}
+
+          <tr>
+            <td colspan="7" class="text-muted text-center py-4">
+              No election units found.
+            </td>
+          </tr>
+
+        {% endfor %}
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

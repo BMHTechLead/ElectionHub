@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | ElectionHub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+
+    <div class="card shadow-sm border-0" style="width:100%; max-width:420px; border-radius:12px;">
+
+        <div class="card-body p-4">
+
+            <!-- Title -->
+            <div class="text-center mb-4">
+                <h3 class="fw-bold mb-1">ElectionHub</h3>
+                <div class="text-muted small">
+                    Secure Administrative Access
+                </div>
+            </div>
+
+            <!-- Messages -->
+            {% if form.errors %}
+                <div class="alert alert-danger small">
+                    Invalid username or password.
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label small">Username</label>
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Password</label>
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           required>
+                </div>
+
+                <!-- Standard Bootstrap Green Button -->
+                <button type="submit" class="btn btn-success w-100">
+                    Login
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="card-footer bg-white border-0 text-center small text-muted">
+            Developed by <strong>TechLeadIQ</strong>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

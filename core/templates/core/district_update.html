@@ -1,0 +1,146 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+{% block title %}{{ district.name }} | ElectionHub{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+<h3 class="fw-bold mb-1">
+  <a href="
+    {% if voting_type|lower == 'public' %}
+      {% url 'governorate_public' district.governorate.election.id district.governorate.id %}
+    {% else %}
+      {% url 'governorate_special' district.governorate.election.id district.governorate.id %}
+    {% endif %}
+  "
+     class="text-decoration-none text-dark">
+    ← {{ district.governorate.name }}
+  </a>
+</h3>
+
+
+  <div class="text-muted small mb-3">
+    Governorate: {{ district.governorate.name }} |
+    Type: {{ voting_type }}
+  </div>
+
+  <!-- SUMMARY CARD -->
+  <div class="card border-success shadow-sm p-3 mb-4">
+    <div class="row text-center">
+
+      <div class="col-md-4">
+        <div class="text-muted small">PUK Total Votes</div>
+        <div class="fw-bold fs-4 text-success">
+          {{ total_puk_votes|intcomma }}
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="text-muted small">Total Allowed Votes</div>
+        <div class="fw-bold fs-4">
+          {{ total_allowed_votes|intcomma }}
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="text-muted small">PUK %</div>
+        <div class="fw-bold fs-4 text-success">
+          {{ overall_percent|floatformat:2 }}%
+        </div>
+      </div>
+
+    </div>
+
+    <div class="progress mt-3" style="height:12px;">
+      <div class="progress-bar bg-success"
+           style="width: {{ overall_percent|floatformat:0 }}%;">
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+
+    <h5 class="fw-bold mb-4">Subdistricts</h5>
+
+    <div class="table-responsive">
+      <table class="table align-middle table-borderless">
+
+        <thead class="border-bottom">
+          <tr class="text-muted small">
+            <th>Subdistrict</th>
+            <th class="text-end">PUK - Votes</th>
+            <th class="text-end">TA - Votes</th>
+            <th class="text-center">PUK %</th>
+            <th style="width:150px;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+        {% for row in subdistricts_data %}
+
+          <tr class="border-bottom">
+
+            <td class="fw-semibold">
+              {{ row.sub.name }}
+            </td>
+
+            <td class="text-end fw-bold text-success">
+              {{ row.puk_votes|intcomma }}
+            </td>
+
+            <td class="text-end">
+              {{ row.allowed_votes|intcomma }}
+            </td>
+
+            <td class="text-center fw-bold">
+              {{ row.percent|floatformat:2 }}%
+            </td>
+
+            <td class="text-end">
+              <a href="{% url 'subdistrict_detail' row.sub.id %}?type={{ voting_type }}"
+                 class="btn btn-outline-success btn-sm">
+                Open
+              </a>
+            </td>
+
+          </tr>
+
+          <!-- Progress row -->
+   <tr>
+  <td colspan="5" class="pt-0">
+    <div class="progress" style="height:6px;">
+      <div class="progress-bar bg-success"
+           role="progressbar"
+           style="width: {{ row.percent }}%;"
+           aria-valuenow="{{ row.percent }}"
+           aria-valuemin="0"
+           aria-valuemax="100">
+      </div>
+    </div>
+  </td>
+</tr>
+
+
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-muted text-center py-4">
+              No subdistricts found.
+            </td>
+          </tr>
+        {% endfor %}
+
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

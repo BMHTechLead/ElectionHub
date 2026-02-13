@@ -1,0 +1,127 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+
+{% block title %}{{ governorate.name }} - Special Votes{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+
+  <!-- Back Link -->
+  <h3 class="fw-bold mb-2">
+    <a href="{% url 'governorate_detail' election.id governorate.id %}"
+       class="text-decoration-none text-dark">
+      ← {{ governorate.name }} (Special)
+    </a>
+  </h3>
+
+  <div class="text-muted small">
+    Election: {{ election.name }}
+  </div>
+
+  <!-- Total Box -->
+  <div class="mt-3 d-inline-block border border-success rounded px-3 py-2">
+    <span class="text-muted small">Total Special Votes:</span>
+    <span class="fw-bold ms-2">
+      {{ total_votes|intcomma }}
+    </span>
+  </div>
+
+</div>
+
+
+<!-- SEARCH -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+
+    <form method="get" class="row g-2">
+
+      <div class="col-md-4">
+        <input type="text"
+               name="search"
+               value="{{ search }}"
+               placeholder="Search unit name or number..."
+               class="form-control">
+      </div>
+
+      <div class="col-auto">
+        <button type="submit" class="btn btn-success">
+          Search
+        </button>
+
+        <a href="{% url 'governorate_special' election.id governorate.id %}"
+           class="btn btn-outline-secondary reset-btn">
+          Reset
+        </a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+
+    <h5 class="fw-bold mb-3">Special Units</h5>
+
+    <div class="table-responsive">
+      <table class="table align-middle">
+
+        <thead class="border-bottom">
+          <tr class="small text-muted">
+            <th>Unit Number</th>
+            <th>Unit Name</th>
+            <th>Unit Address</th>
+            <th>Voting Gov</th>
+            <th class="text-center">PUK T-Special Votes</th>
+            <th class="text-end">Open</th>
+          </tr>
+        </thead>
+
+       <tbody>
+{% for item in unit_data %}
+<tr>
+  <td>{{ item.election_unit__election_unit_number }}</td>
+  <td>{{ item.election_unit__election_unit_name }}</td>
+  <td>{{ item.election_unit__election_unit_address }}</td>
+  <td>{{ item.voting_governorate}}</td>
+
+  <td class="text-center fw-bold">
+    {{ item.total_votes|intcomma }}
+  </td>
+
+  <td class="text-end">
+    <a href="{% url 'special_unit_detail' election.id item.election_unit %}"
+       class="btn btn-outline-success btn-sm">
+      Open
+    </a>
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="5" class="text-center text-muted py-4">
+    No special votes found.
+  </td>
+</tr>
+{% endfor %}
+</tbody>
+
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+
+<style>
+.reset-btn:hover {
+  background-color: #6c757d;
+  color: white;
+}
+</style>
+
+{% endblock %}

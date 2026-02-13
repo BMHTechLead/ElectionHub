@@ -1,0 +1,209 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+{% block title %}{{ governorate.name }} | ElectionHub{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+
+  <!-- Back Link -->
+  <h3 class="fw-bold mb-1">
+    <a href="{% url 'election_detail' election.id %}"
+       class="text-decoration-none text-dark">
+      ← {{ governorate.name }}
+    </a>
+  </h3>
+
+  <div class="text-muted small">
+    Election: {{ election.name }}
+  </div>
+
+  <!-- Summary Line -->
+  <div class="text-muted small mt-2">
+    T-Vote:
+    <span class="fw-semibold">
+      {{ total_votes|default:0|intcomma }}
+    </span>
+    |
+    Public:
+    <span>{{ public_total|default:0|intcomma }}</span>
+    |
+    Special:
+    <span>{{ special_total|default:0|intcomma }}</span>
+    |
+    TA-Votes:
+    <span class="fw-semibold">
+      {{ total_allowed_votes|default:0|intcomma }}
+    </span>
+    |
+    Public %:
+    <span class="fw-semibold">
+      {{ public_percentage|default:0 }}%
+    </span>
+  </div>
+
+</div>
+
+
+<!-- ====================== SUMMARY CARDS ====================== -->
+
+<div class="row g-3 mb-4">
+
+  <div class="col-md-3">
+    <div class="card border-success shadow-sm h-100">
+      <div class="card-body text-center">
+        <div class="text-muted small">Total Votes</div>
+        <div class="fs-3 fw-bold text-success">
+          {{ total_votes|default:0|intcomma }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-success shadow-sm h-100">
+      <div class="card-body text-center">
+        <div class="text-muted small">Public Votes (PUK)</div>
+        <div class="fs-4 fw-bold text-success">
+          {{ public_total|default:0|intcomma }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-success shadow-sm h-100">
+      <div class="card-body text-center">
+        <div class="text-muted small">Special Votes (PUK)</div>
+        <div class="fs-4 fw-bold text-success">
+          {{ special_total|default:0|intcomma }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-success shadow-sm h-100">
+      <div class="card-body text-center">
+        <div class="text-muted small">T-Public Allowed Votes</div>
+        <div class="fs-4 fw-bold text-success">
+          {{ total_allowed_votes|default:0|intcomma }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ====================== PERCENTAGE PROGRESS ====================== -->
+
+<div class="card border-success shadow-sm mb-4">
+  <div class="card-body">
+
+    <div class="d-flex justify-content-between mb-2">
+      <div class="fw-semibold text-muted">
+        PUK Public Percentage
+      </div>
+      <div class="fw-bold text-success">
+        {{ public_percentage|default:0 }}%
+      </div>
+    </div>
+
+    <div class="progress" style="height: 10px;">
+      <div class="progress-bar bg-success"
+           role="progressbar"
+           style="width: {{ public_percentage|default:0 }}%;">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ====================== DATA UPLOAD SECTION ====================== -->
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold text-dark mb-0">Data Management</h5>
+      <small class="text-muted">Import GEO and Vote files</small>
+    </div>
+
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <a href="{% url 'upload_geo' election.id governorate.id %}"
+           class="btn btn-outline-success w-100">
+          Geo Upload
+        </a>
+      </div>
+
+      <div class="col-md-4">
+        <a href="{% url 'upload_votes' election.id governorate.id %}?type=Public"
+           class="btn btn-outline-success w-100">
+          Public Vote Upload
+        </a>
+      </div>
+
+      <div class="col-md-4">
+        <a href="{% url 'upload_votes' election.id governorate.id %}?type=Special"
+           class="btn btn-outline-success w-100">
+          Special Vote Upload
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ====================== DISTRICT STRUCTURE ====================== -->
+
+<div class="row g-4">
+
+  <!-- Public Section -->
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-3">Public Votes</h5>
+
+        <p class="text-muted small mb-3">
+          Full hierarchy: District → Subdistrict → Election Units
+        </p>
+
+        <a href="{% url 'governorate_public' election.id governorate.id %}"
+           class="btn btn-outline-success w-100">
+          View Public Results
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Special Section -->
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+
+        <h5 class="fw-bold text-success mb-3">Special Votes</h5>
+
+        <p class="text-muted small mb-3">
+          Aggregated by Election Unit (No District structure)
+        </p>
+
+        <a href="{% url 'governorate_special' election.id governorate.id %}"
+           class="btn btn-outline-success w-100">
+          View Special Results
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
