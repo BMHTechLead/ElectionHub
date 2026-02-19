@@ -1,17 +1,17 @@
 {% extends "core/base.html" %}
 {% load humanize %}
 
-{% block title %}{{ governorate.name }} - Special Votes{% endblock %}
+{% block title %}Special Votes - {{ governorate.name }}{% endblock %}
 
 {% block content %}
 
+<!-- HEADER -->
 <div class="mb-4">
 
-  <!-- Back Link -->
-  <h3 class="fw-bold mb-2">
-    <a href="{% url 'governorate_detail' election.id governorate.id %}"
+  <h3 class="fw-bold mb-1">
+    <a href="{% url 'governorate_detail' election.id governorate.id %}?party={{ selected_party }}"
        class="text-decoration-none text-dark">
-      ← {{ governorate.name }} (Special)
+      ← Special Votes - {{ governorate.name }}
     </a>
   </h3>
 
@@ -19,48 +19,57 @@
     Election: {{ election.name }}
   </div>
 
-  <!-- Total Box -->
-  <div class="mt-3 d-inline-block border border-success rounded px-3 py-2">
-    <span class="text-muted small">Total Special Votes:</span>
-    <span class="fw-bold ms-2">
-      {{ total_votes|intcomma }}
-    </span>
-  </div>
-
 </div>
-
 
 <!-- SEARCH -->
-<div class="card shadow-sm border-0 mb-4">
-  <div class="card-body">
+<form method="get" class="row g-2 mb-4">
 
-    <form method="get" class="row g-2">
+  <input type="hidden" name="party" value="{{ selected_party }}">
 
-      <div class="col-md-4">
-        <input type="text"
-               name="search"
-               value="{{ search }}"
-               placeholder="Search unit name or number..."
-               class="form-control">
+  <div class="col-md-8">
+    <input
+      type="text"
+      name="search"
+      value="{{ search }}"
+      class="form-control"
+      placeholder="Search unit name or number..."
+    >
+  </div>
+
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-outline-success w-100">
+      Search
+    </button>
+  </div>
+
+  <div class="col-md-2">
+    <a href="?party={{ selected_party }}"
+       class="btn btn-outline-secondary w-100">
+      Reset
+    </a>
+  </div>
+
+</form>
+
+
+<!-- SUMMARY (Same style as Public page) -->
+<div class="border border-success rounded p-3 mb-4">
+
+  <div class="row text-center">
+
+    <div class="col-md-4">
+      <div class="text-muted small">Total Special Votes</div>
+      <div class="fs-4 fw-bold text-success">
+        {{ total_votes|intcomma }}
       </div>
-
-      <div class="col-auto">
-        <button type="submit" class="btn btn-success">
-          Search
-        </button>
-
-        <a href="{% url 'governorate_special' election.id governorate.id %}"
-           class="btn btn-outline-secondary reset-btn">
-          Reset
-        </a>
-      </div>
-
-    </form>
+    </div>
 
   </div>
+
 </div>
 
 
+<!-- UNITS TABLE -->
 <div class="card shadow-sm border-0">
   <div class="card-body">
 
@@ -71,57 +80,56 @@
 
         <thead class="border-bottom">
           <tr class="small text-muted">
-            <th>Unit Number</th>
+            <th>Unit No</th>
             <th>Unit Name</th>
-            <th>Unit Address</th>
+            <th>Address</th>
             <th>Voting Gov</th>
-            <th class="text-center">PUK T-Special Votes</th>
-            <th class="text-end">Open</th>
+            <th class="text-center">Votes</th>
           </tr>
         </thead>
 
-       <tbody>
-{% for item in unit_data %}
-<tr>
-  <td>{{ item.election_unit__election_unit_number }}</td>
-  <td>{{ item.election_unit__election_unit_name }}</td>
-  <td>{{ item.election_unit__election_unit_address }}</td>
-  <td>{{ item.voting_governorate}}</td>
+        <tbody>
 
-  <td class="text-center fw-bold">
-    {{ item.total_votes|intcomma }}
-  </td>
+        {% for item in unit_data %}
+          <tr class="border-bottom">
 
-  <td class="text-end">
-    <a href="{% url 'special_unit_detail' election.id item.election_unit %}"
-       class="btn btn-outline-success btn-sm">
-      Open
-    </a>
-  </td>
-</tr>
-{% empty %}
-<tr>
-  <td colspan="5" class="text-center text-muted py-4">
-    No special votes found.
-  </td>
-</tr>
-{% endfor %}
-</tbody>
+            <td class="fw-semibold">
 
+              <a href="{% url 'special_unit_detail' election.id item.election_unit %}?party={{ selected_party }}"
+                 class="text-success text-decoration-none">
+                {{ item.election_unit__election_unit_number }}
+              </a>
+
+            </td>
+
+            <td>{{ item.election_unit__election_unit_name }}</td>
+
+            <td class="text-muted small">
+              {{ item.election_unit__election_unit_address }}
+            </td>
+
+            <td>{{ item.voting_governorate }}</td>
+
+            <td class="fw-bold text-success text-center">
+              {{ item.total_votes|intcomma }}
+            </td>
+
+          </tr>
+
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+              No special votes found.
+            </td>
+          </tr>
+        {% endfor %}
+
+        </tbody>
 
       </table>
     </div>
 
   </div>
 </div>
-
-
-
-<style>
-.reset-btn:hover {
-  background-color: #6c757d;
-  color: white;
-}
-</style>
 
 {% endblock %}

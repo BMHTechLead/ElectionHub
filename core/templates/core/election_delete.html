@@ -1,12 +1,12 @@
 {% extends "core/base.html" %}
-{% block title %}Delete Election | ElectionHub{% endblock %}
+{% block title %}Confirm Delete | ElectionHub{% endblock %}
 
 {% block content %}
 
-<div class="card shadow-sm border-danger border-2">
+<div class="card shadow-sm">
   <div class="card-body text-center">
 
-    <h4 class="fw-bold text-danger mb-3">
+    <h4 class="fw-bold mb-3 text-danger">
       Confirm Delete
     </h4>
 
@@ -14,32 +14,29 @@
       Are you sure you want to delete:
     </p>
 
-    <div class="fw-bold fs-5 mb-4 text-dark">
+    <div class="fw-bold mb-4">
       {{ election.name }}
     </div>
 
     <form method="post">
-      {% csrf_token %}
+  {% csrf_token %}
 
-      <div class="row g-3">
+  <div class="d-flex gap-3">
 
-        <div class="col-md-6">
-          <button type="submit"
-                  class="btn btn-outline-danger w-100">
-            Yes, Delete
-          </button>
-        </div>
+    <button type="submit"
+            class="btn btn-outline-success flex-fill">
+      Delete
+    </button>
 
-        <div class="col-md-6">
-          <a href="{% url 'election_list' %}"
-             class="btn btn-outline-secondary w-100">
-            Cancel
-          </a>
-        </div>
+    <a href="{% url 'election_list' %}"
+       class="btn btn-outline-success flex-fill">
+      Cancel
+    </a>
 
-      </div>
+  </div>
 
-    </form>
+</form>
+
 
   </div>
 </div>

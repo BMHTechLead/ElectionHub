@@ -2,21 +2,50 @@ from django.db import models
 from django.core.validators import MinValueValidator
 
 
+from django.db import models
+
 class Election(models.Model):
     TYPE_IRAQ = "IRAQ"
     TYPE_KRG = "KRG"
-    TYPE_CHOICES = [(TYPE_IRAQ, "Iraq"), (TYPE_KRG, "Kurdistan")]
+    TYPE_CHOICES = [
+        (TYPE_IRAQ, "Iraq"),
+        (TYPE_KRG, "Kurdistan")
+    ]
 
     STATUS_ACTIVE = "ACTIVE"
     STATUS_FINISHED = "FINISHED"
-    STATUS_CHOICES = [(STATUS_ACTIVE, "Active"), (STATUS_FINISHED, "Finished")]
+    STATUS_CHOICES = [
+        (STATUS_ACTIVE, "Active"),
+        (STATUS_FINISHED, "Finished")
+    ]
 
     name = models.CharField(max_length=200)
-    election_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
-    election_date = models.DateField(null=True, blank=True)
+
+    election_type = models.CharField(
+        max_length=10,
+        choices=TYPE_CHOICES
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=STATUS_ACTIVE
+    )
+
+    election_date = models.DateField(
+        null=False,
+        blank=False
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["election_date", "election_type"],
+                name="unique_date_per_type"
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -111,4 +140,21 @@ class VoteRecord(models.Model):
             models.Index(fields=["voting_type"]),
         ]
 
+        
 
+
+class VoteUploadLog(models.Model):
+
+    election = models.ForeignKey(Election, on_delete=models.CASCADE)
+    governorate = models.ForeignKey(Governorate, on_delete=models.CASCADE)
+
+    filename = models.CharField(max_length=255)
+
+    inserted_count = models.PositiveIntegerField(default=0)
+    updated_count = models.PositiveIntegerField(default=0)
+    skipped_count = models.PositiveIntegerField(default=0)
+
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.election.name} - {self.governorate.name} - {self.uploaded_at}"

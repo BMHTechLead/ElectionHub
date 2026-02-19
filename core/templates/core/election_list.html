@@ -8,9 +8,8 @@
     <div class="text-muted small">Create elections and explore results by hierarchy</div>
   </div>
   <a class="btn btn-outline-success" href="{% url 'election_create' %}">
-  + New Election
-</a>
-
+    + New Election
+  </a>
 </div>
 
 <div class="row g-3">
@@ -19,28 +18,26 @@
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="fw-bold">{{ e.name }}</div>
-        <div class="text-muted small">{{ e.get_election_type_display }} • {{ e.get_status_display }}</div>
-       <div class="d-flex gap-2 mt-3">
+        <div class="text-muted small">
+          {{ e.get_election_type_display }} • {{ e.get_status_display }}
+        </div>
 
-<div class="d-flex gap-2 mt-3">
+        <div class="d-flex gap-2 mt-3">
+          <a class="btn btn-outline-success btn-sm flex-fill"
+             href="{% url 'election_detail' e.pk %}">
+            Open
+          </a>
 
-  <a class="btn btn-outline-success btn-sm flex-fill"
-     href="{% url 'election_detail' e.pk %}">
-    Open
-  </a>
+          <a class="btn btn-outline-secondary btn-sm"
+             href="{% url 'election_update' e.pk %}">
+            Edit
+          </a>
 
-  <a class="btn btn-outline-secondary btn-sm"
-     href="{% url 'election_update' e.pk %}">
-    Edit
-  </a>
-
-  <a class="btn btn-outline-danger btn-sm"
-     href="{% url 'election_delete' e.pk %}">
-    Delete
-  </a>
-
-</div>
-
+          <a class="btn btn-outline-danger btn-sm"
+             href="{% url 'election_delete' e.pk %}">
+            Delete
+          </a>
+        </div>
 
       </div>
     </div>
@@ -49,5 +46,48 @@
   <div class="text-muted">No elections yet.</div>
   {% endfor %}
 </div>
+{% if elections.has_other_pages %}
+<nav class="mt-5 pt-3">
+  <ul class="pagination justify-content-center">
+
+    {% if elections.has_previous %}
+      <li class="page-item">
+        <a class="page-link text-success border-success"
+           href="?page={{ elections.previous_page_number }}">
+          Previous
+        </a>
+      </li>
+    {% endif %}
+
+    {% for num in elections.paginator.page_range %}
+      {% if elections.number == num %}
+        <li class="page-item active">
+          <span class="page-link bg-success border-success">
+            {{ num }}
+          </span>
+        </li>
+      {% else %}
+        <li class="page-item">
+          <a class="page-link text-success border-success"
+             href="?page={{ num }}">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if elections.has_next %}
+      <li class="page-item">
+        <a class="page-link text-success border-success"
+           href="?page={{ elections.next_page_number }}">
+          Next
+        </a>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+
 
 {% endblock %}

@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% block title %}Data Management | ElectionHub{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+  
+  <h3 class="fw-bold mb-1">
+   <a href="{% url 'election_detail' election.id %}"
+   class="text-decoration-none text-dark">
+   ← Election: {{ election.name }}
+</a>
+
+  </h3>
+
+  <div class="text-muted small">
+    Manage GEO and voting data by governorate
+  </div>
+
+</div>
+
+
+<div class="row g-3">
+  {% for g in governorates %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card shadow-sm border-0 h-100">
+
+      <div class="card-body">
+
+        <h5 class="fw-bold mb-3">
+          {{ g.name }}
+        </h5>
+
+      <div class="d-flex flex-column gap-2">
+
+  <a class="btn btn-outline-success btn-sm w-100"
+     href="{% url 'upload_geo' election.id g.id %}">
+    Geo Upload
+  </a>
+
+  <a class="btn btn-outline-success btn-sm w-100"
+     href="{% url 'upload_votes' election.id g.id %}">
+    Voting Upload
+  </a>
+
+</div>
+
+
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

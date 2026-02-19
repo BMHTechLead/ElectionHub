@@ -7,10 +7,8 @@
 
 <div class="mb-4">
 
-  <div class="mb-4">
-
-  <h3 class="fw-bold mb-1">
-    <a href="{% url 'governorate_detail' election.id governorate.id %}"
+  <h3 class="fw-bold mb-2">
+    <a href="{% url 'governorate_detail' election.id governorate.id %}?party={{ selected_party }}"
        class="text-decoration-none text-dark">
        ← Public Votes - {{ governorate.name }}
     </a>
@@ -22,32 +20,27 @@
 
 </div>
 
+<!-- ================= SEARCH ================= -->
+<form method="get" class="row g-2 mb-4">
 
-  <!-- SEARCH -->
-  <!-- SEARCH -->
-<form method="get" class="row g-2 mb-3">
-
-  <!-- Keep type in URL -->
-  <input type="hidden" name="type" value="{{ voting_type }}">
+  <input type="hidden" name="party" value="{{ selected_party }}">
 
   <div class="col-md-8">
-    <input
-      type="text"
-      name="search"
-      value="{{ search_query }}"
-      class="form-control"
-      placeholder="Search district..."
-    >
+    <input type="text"
+           name="search"
+           value="{{ search_query }}"
+           class="form-control"
+           placeholder="Search district...">
   </div>
 
   <div class="col-md-2">
-    <button type="submit" class="btn btn-success w-100">
+    <button type="submit" class="btn btn-outline-success w-100">
       Search
     </button>
   </div>
 
   <div class="col-md-2">
-    <a href="?type={{ voting_type }}"
+    <a href="?party={{ selected_party }}"
        class="btn btn-outline-secondary w-100">
       Reset
     </a>
@@ -55,62 +48,58 @@
 
 </form>
 
-  <!-- SUMMARY BOX -->
-  <div class="border border-success rounded p-3 mb-4">
+<!-- ================= SUMMARY ================= -->
+<div class="border border-success rounded p-3 mb-4">
 
-    <div class="row text-center">
+  <div class="row text-center">
 
-      <div class="col-md-4">
-        <div class="text-muted small">PUK Total Votes</div>
-        <div class="fs-4 fw-bold text-success">
-          {{ total_puk|intcomma }}
-        </div>
+    <div class="col-md-4">
+      <div class="text-muted small">Total Votes</div>
+      <div class="fs-4 fw-bold text-success">
+        {{ total_votes|intcomma }}
       </div>
-
-      <div class="col-md-4">
-        <div class="text-muted small">Total Allowed Votes</div>
-        <div class="fs-4 fw-bold">
-          {{ total_allowed|intcomma }}
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="text-muted small">PUK %</div>
-        <div class="fs-4 fw-bold text-success">
-          {{ overall_percentage }}%
-        </div>
-      </div>
-
     </div>
 
-    <!-- Progress -->
-    <div class="progress mt-3" style="height: 12px;">
-      <div class="progress-bar bg-success"
-           role="progressbar"
-           style="width: {{ overall_percentage }}%;">
+    <div class="col-md-4">
+      <div class="text-muted small">Total Allowed Votes</div>
+      <div class="fs-4 fw-bold">
+        {{ total_allowed|intcomma }}
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="text-muted small">Percentage</div>
+      <div class="fs-4 fw-bold text-success">
+        {{ overall_percentage|floatformat:2 }}%
       </div>
     </div>
 
   </div>
 
+  <div class="progress mt-3" style="height: 10px;">
+    <div class="progress-bar bg-success"
+         role="progressbar"
+         style="width: {{ overall_percentage|floatformat:0 }}%;">
+    </div>
+  </div>
+
 </div>
 
-<!-- DISTRICTS TABLE -->
+<!-- ================= DISTRICT TABLE ================= -->
 <div class="card shadow-sm border-0">
   <div class="card-body">
 
     <h5 class="fw-bold mb-4">Districts</h5>
 
     <div class="table-responsive">
-      <table class="table align-middle table-borderless">
+      <table class="table align-middle">
 
         <thead class="border-bottom">
           <tr class="small text-muted">
             <th>District</th>
-            <th class="text-center">PUK - Votes</th>
-            <th class="text-center">TA - Votes</th>
-            <th class="text-center">PUK %</th>
-            <th></th>
+            <th class="text-center">Votes</th>
+            <th class="text-center">Allowed</th>
+            <th class="text-center">%</th>
           </tr>
         </thead>
 
@@ -120,11 +109,14 @@
           <tr class="border-bottom">
 
             <td class="fw-semibold">
-              {{ row.district.name }}
+              <a href="{% url 'district_detail' row.district.id %}?party={{ selected_party }}&type=Public"
+                 class="text-success text-decoration-none">
+                 {{ row.district.name }}
+              </a>
             </td>
 
             <td class="text-success fw-bold text-center">
-              {{ row.puk_votes|intcomma }}
+              {{ row.votes|intcomma }}
             </td>
 
             <td class="text-center">
@@ -132,24 +124,16 @@
             </td>
 
             <td class="text-center fw-bold">
-              {{ row.percentage }}%
-            </td>
-
-            <td class="text-end">
-              <a href="{% url 'district_detail' row.district.id %}?type=Public"
-                 class="btn btn-outline-success btn-sm">
-                 Open
-              </a>
+              {{ row.percentage|floatformat:2 }}%
             </td>
 
           </tr>
 
-          <!-- Progress bar row -->
           <tr>
-            <td colspan="5">
-              <div class="progress mb-3" style="height: 8px;">
+            <td colspan="4">
+              <div class="progress mb-3" style="height: 6px;">
                 <div class="progress-bar bg-success"
-                     style="width: {{ row.percentage }}%;">
+                     style="width: {{ row.percentage|floatformat:0 }}%;">
                 </div>
               </div>
             </td>
@@ -157,7 +141,7 @@
 
         {% empty %}
           <tr>
-            <td colspan="5" class="text-center text-muted py-4">
+            <td colspan="4" class="text-center text-muted py-4">
               No results found.
             </td>
           </tr>
@@ -169,5 +153,16 @@
 
   </div>
 </div>
+
+<style>
+.btn-outline-success {
+    border: 2px solid #198754;
+    color: #198754;
+}
+.btn-outline-success:hover {
+    background-color: #198754;
+    color: #fff;
+}
+</style>
 
 {% endblock %}
