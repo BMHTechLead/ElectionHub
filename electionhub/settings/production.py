@@ -24,6 +24,9 @@ DATABASES = {
 SESSION_COOKIE_AGE = 900  # 15 min for production
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://187.77.75.145"
+]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_ROOT = "/var/www/electionhub/media/"
