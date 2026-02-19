@@ -5,7 +5,11 @@ DEBUG = False
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
-ALLOWED_HOSTS = ["187.77.75.145"]
+ALLOWED_HOSTS = [
+    "187.77.75.145",
+    "localhost",
+    "127.0.0.1"
+]
 
 DATABASES = {
     'default': {
